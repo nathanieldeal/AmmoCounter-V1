@@ -1,17 +1,18 @@
 // Define the LED digit patterns, from 0 to 9    
-// Updated 2/12/2016
+// Updated 2/15/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
 // Note that these patterns are for common anode displays
 // 0 = LED on, 1 = LED off:
 
-
-int displayCount = 6;  // Intial count
-int countSet = displayCount; // Store initial count
+int countSet = 12; // Set initial count
+int displayCount = countSet;  // Store Intial count
+int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
 
 int firstDigit;
 int secondDigit;
+boolean toggleState;
 boolean resetState; 
 boolean counterState; 
 
@@ -21,9 +22,10 @@ int sensorValue = 0;        // Value read from the ir beam
 int outputValue = 0;        // Value output to the PWM (analog out)
 boolean hasCleared = true;  // Check for cleared dart
  
-// Reset/Counter Pins
-const int resetPin = 5;     // Use digital pin 6 for the reset pin
-const int counterPin = 6;     // Use digital pin 7 for the counter pin
+// Toggle/Reset/Counter Pins
+const int togglePin = 4;     // Use digital pin 4 for the reset pin
+const int resetPin = 5;     // Use digital pin 5 for the reset pin
+const int counterPin = 6;     // Use digital pin 6 for the counter pin
 
 // Shift Register Pins
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
@@ -57,61 +59,98 @@ void setup() {
   writeRegisters();
   
   // Show Initial Count
-  changeNumber();
+  changeNumber(displayCount);
   
 }               
 
 void loop(){
   
-  //Track IR Sensor
-  sensorValue = analogRead(analogInPin); // Read the analog in value
-  outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
+  // Monitor IR Beam
+  //----------------------------------------------------//
   
-  // Counter / Reset Buttons
-  resetState = digitalRead(resetPin);
-  counterState = digitalRead(counterPin);
+    sensorValue = analogRead(analogInPin); // Read the analog in value
+    outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
-  // Print the results to the serial monitor for testing
-  if (outputValue > 100) {
-    Serial.print("\t output = ");      
-    Serial.println(outputValue);
-  }
-
-  // Check if the pushbutton is pressed.
-  if (counterState == HIGH) {       
-    changeNumber();  
-  }
-
-  // If barrel is clear and beam is broken then countdown
-  if ( hasCleared == true ) {
-  
-    if (outputValue > 175) {       
-      changeNumber(); 
-      hasCleared = false;
-      //delay(2);
+    // Check to see if dart has cleared
+    if (outputValue < 50) {
+      hasCleared = true;
     }
-  }
   
-  // Check to see if dart has cleared
-  if (outputValue < 50) {
-    hasCleared = true;
-  }
+    // If barrel is clear and beam is broken then countdown
+    if ( hasCleared == true ) {
 
-  // Check if the magazine has been ejected and reloaded
-  if (resetState == HIGH) {       
-    resetNumber(); 
-  }
+      if (outputValue > 175) {    
+        changeNumber(displayCount--); 
+        hasCleared = false;
+        //delay(2);
+      }
+    }
+  
+    // Print the results to the serial monitor for testing
+    if (outputValue > 100) {
+      Serial.print("\t output = ");      
+      Serial.println(outputValue);
+    }
+
+  
+  // Monitor Counter Button
+  //----------------------------------------------------//
+  
+    counterState = digitalRead(counterPin);
+
+    // Check if the pushbutton is pressed.
+    if (counterState == HIGH) {       
+      changeNumber(displayCount--);  
+    }
+  
+  
+  // Monitor Toggle Button
+  //----------------------------------------------------//
+ 
+    toggleState = digitalRead(togglePin);
+  
+    // Check if the togglebutton is pressed.
+    if (toggleState == HIGH) {       
+        
+      if (countSet == toggleArray[4]) {
+        countSet = toggleArray[0];
+      }
+      
+      else if (countSet == toggleArray[3]) {
+        countSet = toggleArray[4];
+      }
+      
+      else if (countSet == toggleArray[2]) {
+        countSet = toggleArray[3];
+      }
+      
+      else if (countSet == toggleArray[1]) {
+        countSet = toggleArray[2];
+      }
+      
+      else if (countSet == toggleArray[0]) {
+        countSet = toggleArray[1];
+      }
+
+      displayCount = countSet;
+      changeNumber(displayCount);
+    }
+    
+  
+  // Monitor Reset Button
+  //----------------------------------------------------//
+    
+    resetState = digitalRead(resetPin);
+  
+    // Check if resetbutton is pressed.
+    if (resetState == HIGH) {  
+      displayCount = countSet;    
+      changeNumber(displayCount);
+    }
 
 }
 
-void resetNumber() {
-  displayCount = 19; 
-  
-  displayNumber(2,0);
-  writeRegisters();  //Send data to the 75HC595
-}
-
-void changeNumber() {
+void changeNumber(int displayCount) {
 
   if( (displayCount < 100) && (displayCount > 9) ) {
     
