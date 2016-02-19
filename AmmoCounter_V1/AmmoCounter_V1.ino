@@ -6,7 +6,7 @@
 // Note that these patterns are for common anode displays
 // 0 = LED on, 1 = LED off:
 
-int countSet = 12; // Set initial count
+int countSet = 18; // Set initial count
 int displayCount = countSet;  // Store Intial count
 int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
 
@@ -41,6 +41,9 @@ int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 boolean registers[numOfRegisterPins];
 
 void setup() {
+
+  pinMode(togglePin, INPUT);
+  digitalWrite(togglePin, LOW); // Pull Down
   
   pinMode(resetPin, INPUT);
   digitalWrite(resetPin, LOW); // Pull Down
