@@ -75,22 +75,19 @@ void loop(){
     outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
     // Check to see if dart has cleared
-    if (outputValue < 50) {
+    if (outputValue < 75) { // This value can be changed depending on IR beam distance
       hasCleared = true;
     }
   
     // If barrel is clear and beam is broken then countdown
-    if ( hasCleared == true ) {
-
-      if (outputValue > 175) {    
-        changeNumber(displayCount--); 
-        hasCleared = false;
-        //delay(2);
-      }
+    if (hasCleared == true && outputValue > 125) {  // This value can be changed depending on dart speed  
+      changeNumber(displayCount--); 
+      hasCleared = false;
+      //delay(2);
     }
   
     // Print the results to the serial monitor for testing
-    if (outputValue > 100) {
+    if (outputValue > 0) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
     }
