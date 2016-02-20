@@ -80,14 +80,14 @@ void loop(){
     }
   
     // If barrel is clear and beam is broken then countdown
-    if (hasCleared == true && outputValue > 125) {  // This value can be changed depending on dart speed  
+    if (hasCleared == true && outputValue > 100) {  // This value can be changed depending on dart speed  
       changeNumber(displayCount--); 
       hasCleared = false;
       //delay(2);
     }
   
     // Print the results to the serial monitor for testing
-    if (outputValue > 0) {
+    if (outputValue > 100) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
     }
@@ -193,11 +193,7 @@ void changeNumber(int displayCount) {
     writeRegisters(); 
   }
   
-  delay(250); // Set iteration for 1 second  
-  
-  //Serial.println(displayCount);
-  
-  
+  //delay(250); // May be needed to debounce switch
 }
 
 
