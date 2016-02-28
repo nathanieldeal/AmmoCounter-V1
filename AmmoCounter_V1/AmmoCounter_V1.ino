@@ -1,5 +1,5 @@
 // Define the LED digit patterns, from 0 to 9    
-// Updated 2/15/2016
+// Updated 2/28/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -75,34 +75,34 @@ void loop(){
     outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
     // Check to see if dart has cleared
-    if (outputValue < 75) { // This value can be changed depending on IR beam distance
+    if (outputValue <= 75) { // This value can be changed depending on IR beam setup
       hasCleared = true;
     }
   
     // If barrel is clear and beam is broken then countdown
-    if (hasCleared == true && outputValue > 100) {  // This value can be changed depending on dart speed  
-      changeNumber(displayCount--); 
-      hasCleared = false;
+    if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
+      changeNumber(--displayCount); 
+      hasCleared = !hasCleared;
       //delay(2);
     }
   
     // Print the results to the serial monitor for testing
-    if (outputValue > 100) {
+    /*if (outputValue > 0) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
-    }
+    }*/
 
   
   // Monitor Counter Button
   //----------------------------------------------------//
-  
+  /*
     counterState = digitalRead(counterPin);
 
     // Check if the pushbutton is pressed.
     if (counterState == HIGH) {       
-      changeNumber(displayCount--);  
+      changeNumber(--displayCount);  
     }
-  
+  */
   
   // Monitor Toggle Button
   //----------------------------------------------------//
@@ -134,48 +134,46 @@ void loop(){
 
       displayCount = countSet;
       changeNumber(displayCount);
+      delay(250); // Debounce button
     }
-    
+  
   
   // Monitor Reset Button
   //----------------------------------------------------//
-    
+  
     resetState = digitalRead(resetPin);
   
     // Check if resetbutton is pressed.
     if (resetState == HIGH) {  
       displayCount = countSet;    
       changeNumber(displayCount);
+      delay(250); // Debounce button
     }
-
+  
 }
 
 void changeNumber(int displayCount) {
 
   if( (displayCount < 100) && (displayCount > 9) ) {
-    
+
     firstDigit = displayCount / 10; // Find the first digit
     secondDigit = displayCount % 10; 
     
-    displayNumber(firstDigit,secondDigit); //Display the digits
-    
-    // Serial.println(secondDigit);
-    
+    displayNumber(firstDigit,secondDigit); //Display the digits  
     displayCount--;
-    
+      
     writeRegisters();  //Send data to the 75HC595
   }
 
   else if( (displayCount < 10) && (displayCount > 0) ) {
-    
+
     firstDigit = 0; // Set the first digit to 0
     secondDigit = displayCount;
     
-    displayNumber(firstDigit,secondDigit); //Display the section
+    displayNumber(firstDigit,secondDigit); //Display the section 
     displayCount--;
-    
+       
     writeRegisters();
-  
   }
   
   else if( displayCount == 0) {
@@ -184,16 +182,12 @@ void changeNumber(int displayCount) {
     secondDigit = 0; // Set the second digit to 0
     
     displayNumber(firstDigit,secondDigit); //Display the section
-    
-    // displayNumber(10); //Turn off all segments
-    
-    // add double zero blink and buzzer function here instead
-    
-    // clearRegisters();
     writeRegisters(); 
+    
+    // TODO: add double zero blink and buzzer function
   }
   
-  //delay(250); // May be needed to debounce switch
+  //delay(250); // May be needed to debounce button
 }
 
 
