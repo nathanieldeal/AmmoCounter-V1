@@ -14,8 +14,6 @@ int countSet = 18; // Set initial count
 int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Set size of array
 int displayCount = toggleArray[toggleCount];  // Store Intial count
-
-
 int firstDigit, secondDigit;
 
 // IR Beam Setup
@@ -34,9 +32,8 @@ int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
 int RCLK_Pin = 8;  // Latch Clock pin 12 on the 75HC595 (Yellow)
 int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 
-//Define register pins
+// Define register pins
 #define numOfRegisterPins 16
-
 boolean registers[numOfRegisterPins];
 
 void setup() {
