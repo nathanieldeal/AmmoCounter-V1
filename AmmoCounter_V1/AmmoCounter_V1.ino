@@ -1,5 +1,5 @@
-// Define the LED digit patterns, from 0 to 9    
-// Updated 2/28/2016
+// AmmoCounter V1 - www.ammocounter.com   
+// Updated 3/18/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -10,11 +10,8 @@ int countSet = 18; // Set initial count
 int displayCount = countSet;  // Store Intial count
 int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
 
-int firstDigit;
-int secondDigit;
-boolean toggleState;
-boolean resetState; 
-boolean counterState; 
+int firstDigit, secondDigit;
+boolean toggleState, resetState, counterState; 
 
 // IR Beam Setup
 const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
@@ -87,10 +84,10 @@ void loop(){
     }
   
     // Print the results to the serial monitor for testing
-    /*if (outputValue > 0) {
+    if (outputValue > 0) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
-    }*/
+    }
 
   
   // Monitor Counter Button
@@ -190,16 +187,11 @@ void changeNumber(int displayCount) {
   //delay(250); // May be needed to debounce button
 }
 
-
 void displayNumber(int digit1, int digit2) {
-
-  for (int digit = numOfRegisterPins ; digit > 0 ; digit--) {
     
-    //Turn on the right segments for this digit
-    firstNumber(digit1);
-    secondNumber(digit2);
-    
-  }
+  //Turn on the right segments for each digit
+  firstNumber(digit1);
+  secondNumber(digit2);
 
 }
 
