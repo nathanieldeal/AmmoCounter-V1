@@ -11,7 +11,7 @@
 
 // Setup Counter Variables
 int toggleArray[] = {35,25,18,12,6}; // Setup array of magazine sizes
-int toggleCount = (sizeof(toggleArray)/sizeof(int))-3; // Find size of array
+int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
 int firstDigit, secondDigit;
@@ -65,7 +65,6 @@ void loop(){
     if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
       changeNumber(--displayCount); 
       hasCleared = !hasCleared;
-      //delay(2);
     }
     
     // Check to see if dart has cleared
@@ -74,10 +73,10 @@ void loop(){
     }
 
     // Print the results to the serial monitor for testing
-    if (outputValue > 0) {
+    /* if (outputValue > 0) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
-    }
+    } */
 
   
   // Monitor Counter Button
@@ -98,7 +97,7 @@ void loop(){
       if (togglePosition == 0) {
         togglePosition = toggleCount; //Reset to max.
       } else {
-        togglePosition++; //Deincrement capacity one step 
+        togglePosition--; //Deincrement capacity one step 
       } 
 
       displayCount = toggleArray[togglePosition];
