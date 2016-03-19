@@ -10,17 +10,17 @@
 #include <Button.h>
 
 // Setup Counter Variables
-int countSet = 18; // Set initial count
-int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
-int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Set size of array
-int displayCount = toggleArray[toggleCount];  // Store Intial count
+int toggleArray[] = {35,25,18,12,6}; // Setup array of magazine sizes
+int toggleCount = (sizeof(toggleArray)/sizeof(int))-3; // Find size of array
+int togglePosition = toggleCount; //Start at max capacity.
+int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
 int firstDigit, secondDigit;
 
 // IR Beam Setup
 const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
 int sensorValue = 0;        // Value read from the ir beam
 int outputValue = 0;        // Value output to the PWM (analog out)
-boolean hasCleared = true;  // Check for cleared dart
+boolean hasCleared = false;  // Check for cleared dart
  
 // Toggle/Reset/Counter Setup
 Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
@@ -32,7 +32,7 @@ int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
 int RCLK_Pin = 8;  // Latch Clock pin 12 on the 75HC595 (Yellow)
 int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 
-// Define register pins
+//Define register pins
 #define numOfRegisterPins 16
 boolean registers[numOfRegisterPins];
 
@@ -61,18 +61,18 @@ void loop(){
     sensorValue = analogRead(analogInPin); // Read the analog in value
     outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
-    // Check to see if dart has cleared
-    if (outputValue <= 75) { // This value can be changed depending on IR beam setup
-      hasCleared = true;
-    }
-  
     // If barrel is clear and beam is broken then countdown
     if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
       changeNumber(--displayCount); 
       hasCleared = !hasCleared;
       //delay(2);
     }
-  
+    
+    // Check to see if dart has cleared
+    if (outputValue <= 80) { // This value can be changed depending on IR beam setup
+      hasCleared = true;
+    }
+
     // Print the results to the serial monitor for testing
     if (outputValue > 0) {
       Serial.print("\t output = ");      
@@ -86,7 +86,6 @@ void loop(){
     // Check if the pushbutton is pressed.
     if (counterBtn.uniquePress()) {       
       changeNumber(--displayCount);  
-      //delay(250); // Debounce button
     }
   
   
@@ -96,27 +95,13 @@ void loop(){
     // Check if the togglebutton is pressed.
     if (toggleBtn.uniquePress()) {       
         
-      if (countSet == toggleArray[4]) {
-        countSet = toggleArray[0];
-      }
-      
-      else if (countSet == toggleArray[3]) {
-        countSet = toggleArray[4];
-      }
-      
-      else if (countSet == toggleArray[2]) {
-        countSet = toggleArray[3];
-      }
-      
-      else if (countSet == toggleArray[1]) {
-        countSet = toggleArray[2];
-      }
-      
-      else if (countSet == toggleArray[0]) {
-        countSet = toggleArray[1];
-      }
+      if (togglePosition == 0) {
+        togglePosition = toggleCount; //Reset to max.
+      } else {
+        togglePosition++; //Deincrement capacity one step 
+      } 
 
-      displayCount = countSet;
+      displayCount = toggleArray[togglePosition];
       changeNumber(displayCount); //Send to display
     }
   
@@ -126,7 +111,7 @@ void loop(){
   
     // Check if resetbutton is pressed.
     if (resetBtn.uniquePress()) {  
-      displayCount = countSet;    
+      displayCount = toggleArray[togglePosition];  
       changeNumber(displayCount); //Send to display
     }
   
