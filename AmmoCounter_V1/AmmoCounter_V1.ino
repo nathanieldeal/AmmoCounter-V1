@@ -3,15 +3,18 @@
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
-// Note that these patterns are for common anode displays
+// Note that these patterns are for 2 digit common anode displays
 // 0 = LED on, 1 = LED off:
 
+// Define Libraries
+#include <Button.h>
+
+// Setup Counter Variables
 int countSet = 18; // Set initial count
 int displayCount = countSet;  // Store Intial count
 int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
-
 int firstDigit, secondDigit;
-boolean toggleState, resetState, counterState; 
+//boolean toggleState, resetState, counterState; 
 
 // IR Beam Setup
 const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
@@ -19,34 +22,34 @@ int sensorValue = 0;        // Value read from the ir beam
 int outputValue = 0;        // Value output to the PWM (analog out)
 boolean hasCleared = true;  // Check for cleared dart
  
-// Toggle/Reset/Counter Pins
-const int togglePin = 4;     // Use digital pin 4 for the reset pin
-const int resetPin = 5;     // Use digital pin 5 for the reset pin
-const int counterPin = 6;     // Use digital pin 6 for the counter pin
+// Toggle/Reset/Counter Setup
+Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
+Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
+Button counterBtn = Button (6, PULLDOWN);  // Use digital pin 6 for the counter pin
+//const int togglePin = 4;     // Use digital pin 4 for the reset pin
+//const int resetPin = 5;     // Use digital pin 5 for the reset pin
+//const int counterPin = 6;     // Use digital pin 6 for the counter pin
 
-// Shift Register Pins
+// Shift Register Setup
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
 int RCLK_Pin = 8;  // Latch Clock pin 12 on the 75HC595 (Yellow)
 int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 
-//How many of the shift registers - change this
-#define number_of_74hc595s 2 
-
-//do not touch
-#define numOfRegisterPins number_of_74hc595s * 8
+//Define register pins
+#define numOfRegisterPins 16
 
 boolean registers[numOfRegisterPins];
 
 void setup() {
 
-  pinMode(togglePin, INPUT);
-  digitalWrite(togglePin, LOW); // Pull Down
-  
-  pinMode(resetPin, INPUT);
-  digitalWrite(resetPin, LOW); // Pull Down
-  
-  pinMode(counterPin, INPUT);
-  digitalWrite(counterPin, LOW); // Pull Down
+//  pinMode(togglePin, INPUT);
+//  digitalWrite(togglePin, LOW); // Pull Down
+//  
+//  pinMode(resetPin, INPUT);
+//  digitalWrite(resetPin, LOW); // Pull Down
+//  
+//  pinMode(counterPin, INPUT);
+//  digitalWrite(counterPin, LOW); // Pull Down
   
   pinMode(SER_Pin, OUTPUT);
   pinMode(RCLK_Pin, OUTPUT);
@@ -92,22 +95,23 @@ void loop(){
   
   // Monitor Counter Button
   //----------------------------------------------------//
-  /*
-    counterState = digitalRead(counterPin);
+  
+    //counterState = digitalRead(counterPin);
 
     // Check if the pushbutton is pressed.
-    if (counterState == HIGH) {       
+    if (counterBtn.uniquePress()) {       
       changeNumber(--displayCount);  
+      //delay(250); // Debounce button
     }
-  */
+  
   
   // Monitor Toggle Button
   //----------------------------------------------------//
  
-    toggleState = digitalRead(togglePin);
+    //toggleState = digitalRead(togglePin);
   
     // Check if the togglebutton is pressed.
-    if (toggleState == HIGH) {       
+    if (toggleBtn.uniquePress()) {       
         
       if (countSet == toggleArray[4]) {
         countSet = toggleArray[0];
@@ -130,7 +134,7 @@ void loop(){
       }
 
       displayCount = countSet;
-      changeNumber(displayCount);
+      changeNumber(displayCount); //Send to display
       delay(250); // Debounce button
     }
   
@@ -138,13 +142,13 @@ void loop(){
   // Monitor Reset Button
   //----------------------------------------------------//
   
-    resetState = digitalRead(resetPin);
+    //resetState = digitalRead(resetPin);
   
     // Check if resetbutton is pressed.
-    if (resetState == HIGH) {  
+    if (resetBtn.uniquePress()) {  
       displayCount = countSet;    
-      changeNumber(displayCount);
-      delay(250); // Debounce button
+      changeNumber(displayCount); //Send to display
+      //delay(250); // Debounce button
     }
   
 }
