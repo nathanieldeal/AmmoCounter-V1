@@ -7,7 +7,7 @@ Overview video - https://www.youtube.com/watch?v=6iZIyM2XtUQ
 
 Contributing Authors: SearingPhoenix
 
-# How to install:
+## How to install:
 Download the latest code [here](https://github.com/nathanieldeal/AmmoCounter-V1/archive/master.zip) and unzip.
 
 Copy the contents of the "Libraries" folder content into the “Libraries” folder in the folder you installed your Arduino software.
