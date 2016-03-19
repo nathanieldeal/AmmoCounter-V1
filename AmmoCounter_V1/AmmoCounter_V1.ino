@@ -6,15 +6,17 @@
 // Note that these patterns are for 2 digit common anode displays
 // 0 = LED on, 1 = LED off:
 
-// Define Libraries
+// Include Libraries
 #include <Button.h>
 
 // Setup Counter Variables
 int countSet = 18; // Set initial count
-int displayCount = countSet;  // Store Intial count
 int toggleArray[] = {6,12,18,25,35}; // Setup array of clip sizes
+int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Set size of array
+int displayCount = toggleArray[toggleCount];  // Store Intial count
+
+
 int firstDigit, secondDigit;
-//boolean toggleState, resetState, counterState; 
 
 // IR Beam Setup
 const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
@@ -26,9 +28,6 @@ boolean hasCleared = true;  // Check for cleared dart
 Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
 Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
 Button counterBtn = Button (6, PULLDOWN);  // Use digital pin 6 for the counter pin
-//const int togglePin = 4;     // Use digital pin 4 for the reset pin
-//const int resetPin = 5;     // Use digital pin 5 for the reset pin
-//const int counterPin = 6;     // Use digital pin 6 for the counter pin
 
 // Shift Register Setup
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
@@ -41,15 +40,6 @@ int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 boolean registers[numOfRegisterPins];
 
 void setup() {
-
-//  pinMode(togglePin, INPUT);
-//  digitalWrite(togglePin, LOW); // Pull Down
-//  
-//  pinMode(resetPin, INPUT);
-//  digitalWrite(resetPin, LOW); // Pull Down
-//  
-//  pinMode(counterPin, INPUT);
-//  digitalWrite(counterPin, LOW); // Pull Down
   
   pinMode(SER_Pin, OUTPUT);
   pinMode(RCLK_Pin, OUTPUT);
@@ -95,8 +85,6 @@ void loop(){
   
   // Monitor Counter Button
   //----------------------------------------------------//
-  
-    //counterState = digitalRead(counterPin);
 
     // Check if the pushbutton is pressed.
     if (counterBtn.uniquePress()) {       
@@ -107,8 +95,6 @@ void loop(){
   
   // Monitor Toggle Button
   //----------------------------------------------------//
- 
-    //toggleState = digitalRead(togglePin);
   
     // Check if the togglebutton is pressed.
     if (toggleBtn.uniquePress()) {       
@@ -135,20 +121,16 @@ void loop(){
 
       displayCount = countSet;
       changeNumber(displayCount); //Send to display
-      delay(250); // Debounce button
     }
   
   
   // Monitor Reset Button
   //----------------------------------------------------//
   
-    //resetState = digitalRead(resetPin);
-  
     // Check if resetbutton is pressed.
     if (resetBtn.uniquePress()) {  
       displayCount = countSet;    
       changeNumber(displayCount); //Send to display
-      //delay(250); // Debounce button
     }
   
 }
@@ -465,7 +447,6 @@ void clearRegisters(){
      registers[i] = HIGH;
   }
 } 
-
 
 //Set and display registers
 //Only call AFTER all values are set how you would like (slow otherwise)
