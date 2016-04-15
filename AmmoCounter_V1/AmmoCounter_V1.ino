@@ -7,25 +7,18 @@
 // 0 = LED on, 1 = LED off:
 
 // Include Libraries
-#include <Button.h>
+//#include <Button.h>
+#include <Bounce2.h>
 
 // Setup Counter Variables
-int toggleArray[] = {35,25,18,12,6}; // Setup array of magazine sizes
-int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
-int togglePosition = toggleCount; //Start at max capacity.
-int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
+int displayCount = 99;  // Set intial count to 99
 int firstDigit, secondDigit;
-
-// IR Beam Setup
-const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
-int sensorValue = 0;        // Value read from the ir beam
-int outputValue = 0;        // Value output to the PWM (analog out)
-boolean hasCleared = false;  // Check for cleared dart
  
-// Toggle/Reset/Counter Setup
-Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
-Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
-Button counterBtn = Button (6, PULLDOWN);  // Use digital pin 6 for the counter pin
+// Reset/Counter Setup
+const int resetPin = 5;     // Use digital pin 5 for the reset pin
+const int counterPin = 6;     // Use digital pin 6 for the counter pin
+Bounce  bouncer  = Bounce();
+Bounce  bouncer2  = Bounce();
 
 // Shift Register Setup
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
@@ -44,6 +37,18 @@ void setup() {
 
   Serial.begin(9600);
   
+  pinMode(resetPin, INPUT);
+  digitalWrite(resetPin, LOW); // Pull Down
+  
+  pinMode(counterPin, INPUT);
+  digitalWrite(counterPin, LOW); // Pull Down
+
+  bouncer .attach(counterPin);
+  bouncer .interval(5);
+
+  bouncer2 .attach(resetPin);
+  bouncer2 .interval(5);
+  
   // Reset all register pins
   clearRegisters();
   writeRegisters();
@@ -54,66 +59,35 @@ void setup() {
 }               
 
 void loop(){
-  
-  // Monitor IR Beam
-  //----------------------------------------------------//
-  
-    sensorValue = analogRead(analogInPin); // Read the analog in value
-    outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
-    // If barrel is clear and beam is broken then countdown
-    if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
-      changeNumber(--displayCount); 
-      hasCleared = !hasCleared;
-    }
-    
-    // Check to see if dart has cleared
-    if (outputValue <= 80) { // This value can be changed depending on IR beam setup
-      hasCleared = true;
-    }
-
-    // Print the results to the serial monitor for testing
-    /* if (outputValue > 0) {
-      Serial.print("\t output = ");      
-      Serial.println(outputValue);
-    } */
-
+  boolean changed = bouncer.update();
+  boolean changed2 = bouncer2.update();
   
   // Monitor Counter Button
   //----------------------------------------------------//
 
     // Check if the pushbutton is pressed.
-    if (counterBtn.uniquePress()) {       
-      changeNumber(--displayCount);  
-    }
-  
-  
-  // Monitor Toggle Button
-  //----------------------------------------------------//
-  
-    // Check if the togglebutton is pressed.
-    if (toggleBtn.uniquePress()) {       
-        
-      if (togglePosition == 0) {
-        togglePosition = toggleCount; //Reset to max.
-      } else {
-        togglePosition--; //Deincrement capacity one step 
-      } 
 
-      displayCount = toggleArray[togglePosition];
-      changeNumber(displayCount); //Send to display
+    if ( changed ) {
+
+      int value = bouncer.read();
+      if ( value == HIGH) {
+        changeNumber(--displayCount);  
+      }
     }
-  
-  
+    
   // Monitor Reset Button
   //----------------------------------------------------//
   
     // Check if resetbutton is pressed.
-    if (resetBtn.uniquePress()) {  
-      displayCount = toggleArray[togglePosition];  
-      changeNumber(displayCount); //Send to display
+    if ( changed2 ) {
+
+      int value2 = bouncer2.read();
+      if ( value2 == HIGH) {  
+        displayCount = 99;
+        changeNumber(displayCount); //Send to display
+      }
     }
-  
 }
 
 void changeNumber(int displayCount) {
