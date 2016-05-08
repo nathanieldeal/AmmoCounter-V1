@@ -23,6 +23,7 @@ int outputValue = 0;        // Value output to the PWM (analog out)
 boolean hasCleared = false;  // Check for cleared dart
  
 // Toggle/Reset/Counter Setup
+Button clipBtn = Button (3, PULLDOWN);     // Use digital pin 3 for the clip pin
 Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
 Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
 Button counterBtn = Button (6, PULLDOWN);  // Use digital pin 6 for the counter pin
@@ -109,10 +110,22 @@ void loop(){
   
     // Check if resetbutton is pressed.
     if (resetBtn.uniquePress()) {  
-      displayCount = toggleArray[togglePosition];  
-      changeNumber(displayCount); //Send to display
+      resetCount();
     }
+
+  // Monitor Clip Reset
+  //----------------------------------------------------//
+    
+    // Check if clip is released
+    //if (clipBtn.uniquePress()) {  
+    //  resetCount();
+    //}
   
+}
+
+void resetCount(){
+  displayCount = toggleArray[togglePosition];  
+  changeNumber(displayCount); //Send to display
 }
 
 void changeNumber(int displayCount) {
@@ -453,5 +466,4 @@ void writeRegisters(){
 void setRegisterPin(int index, int value){
   registers[index] = value;
 }
-
 
