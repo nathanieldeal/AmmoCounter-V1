@@ -1,5 +1,5 @@
 // AmmoCounter V1 - www.ammocounter.com   
-// Updated 3/18/2016
+// Updated 5/7/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
