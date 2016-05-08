@@ -82,11 +82,10 @@ void loop(){
   // Monitor Counter Button
   //----------------------------------------------------//
 
-    // Check if the pushbutton is pressed.
-    if (counterBtn.uniquePress()) {       
-      changeNumber(--displayCount);  
-    }
-  
+    //Check if the pushbutton is pressed.
+    //if (counterBtn.uniquePress()) {       
+    //  changeNumber(--displayCount);  
+    //}
   
   // Monitor Toggle Button
   //----------------------------------------------------//
