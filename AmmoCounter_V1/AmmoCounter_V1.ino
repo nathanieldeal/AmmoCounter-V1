@@ -1,5 +1,5 @@
 // AmmoCounter V1 - www.ammocounter.com   
-// Updated 5/7/2016
+// Updated 6/9/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -10,7 +10,7 @@
 #include <Button.h>
 
 // Setup Counter Variables
-int toggleArray[] = {35,25,18,12,6}; // Setup array of magazine sizes
+int toggleArray[] = {35,25,18,15,12,6}; // Setup array of magazine sizes
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
@@ -74,10 +74,10 @@ void loop(){
     }
 
     // Print the results to the serial monitor for testing
-    /* if (outputValue > 0) {
+    /*if (outputValue > 0) {
       Serial.print("\t output = ");      
       Serial.println(outputValue);
-    } */
+    }*/
 
   
   // Monitor Counter Button
