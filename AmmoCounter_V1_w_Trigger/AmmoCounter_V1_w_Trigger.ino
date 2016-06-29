@@ -7,7 +7,7 @@
 // 0 = LED on, 1 = LED off:
 
 // Include Libraries
-#include <Button.h>
+#include <Bounce2.h>
 
 // Setup Counter Variables
 int toggleArray[] = {35,25,18,15,12,6}; // Setup array of magazine sizes
@@ -16,19 +16,15 @@ int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
 int firstDigit, secondDigit;
 
-// IR Beam Setup
-const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
-int sensorValue = 0;        // Value read from the ir beam
-int outputValue = 0;        // Value output to the PWM (analog out)
-boolean hasCleared = false;  // Check for cleared dart
- 
-// Toggle/Reset/Counter Setup
-Button clipBtn = Button (3, PULLDOWN);     // Use digital pin 3 for the clip pin
-Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
-Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
-Button counterBtn = Button (6, PULLDOWN);  // Use digital pin 6 for the counter pin
+// Setup Lever Switches with Bounce2 Library
+#define toggleBtnpin 4
+#define clipBtnpin 5
+#define counterBtnpin 6
+Bounce toggleBtn = Bounce(); 
+Bounce clipBtn = Bounce(); 
+Bounce counterBtn = Bounce(); 
 
-// Shift Register Setup
+// Shift Register Init
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
 int RCLK_Pin = 8;  // Latch Clock pin 12 on the 75HC595 (Yellow)
 int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
@@ -38,12 +34,30 @@ int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
 boolean registers[numOfRegisterPins];
 
 void setup() {
-  
+
+  // Toggle/Reset/Counter Setup
+  pinMode(toggleBtnpin, INPUT); 
+  pinMode(clipBtnpin, INPUT); 
+  pinMode(counterBtnpin, INPUT); 
+
+  digitalWrite(toggleBtnpin, LOW);  // Activate internal pullup
+  digitalWrite(clipBtnpin, LOW);  // Activate internal pullup
+  digitalWrite(counterBtnpin, LOW);  // Activate internal pullup
+
+  toggleBtn.attach(toggleBtnpin);
+  clipBtn.attach(clipBtnpin);
+  counterBtn.attach(counterBtnpin);
+
+  toggleBtn.interval(5);
+  clipBtn.interval(5);
+  counterBtn.interval(5); 
+
+  // Shift Register Setup
   pinMode(SER_Pin, OUTPUT);
   pinMode(RCLK_Pin, OUTPUT);
   pinMode(SRCLK_Pin, OUTPUT);
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   
   // Reset all register pins
   clearRegisters();
@@ -55,72 +69,51 @@ void setup() {
 }               
 
 void loop(){
-  
-  // Monitor IR Beam
-  //----------------------------------------------------//
-  
-    sensorValue = analogRead(analogInPin); // Read the analog in value
-    outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
-    // If barrel is clear and beam is broken then countdown
-    if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
-      changeNumber(--displayCount); 
-      hasCleared = !hasCleared;
-    }
-    
-    // Check to see if dart has cleared
-    if (outputValue <= 80) { // This value can be changed depending on IR beam setup
-      hasCleared = true;
-    }
-
-    // Print the results to the serial monitor for testing
-    /*if (outputValue > 0) {
-      Serial.print("\t output = ");      
-      Serial.println(outputValue);
-    }*/
-
-  
   // Monitor Counter Button
   //----------------------------------------------------//
 
-    //Check if the pushbutton is pressed.
-    //if (counterBtn.uniquePress()) {       
-    //  changeNumber(--displayCount);  
-    //}
+    // Check if the counter button is pressed.    
+    if (counterBtn.update() ) 
+    {
+      if (counterBtn.read() == HIGH)  
+      {
+        Serial.print("Button #1 pressed: "); 
+        changeNumber(--displayCount);  
+      }
+    }  
   
   // Monitor Toggle Button
   //----------------------------------------------------//
   
     // Check if the togglebutton is pressed.
-    if (toggleBtn.uniquePress()) {       
-        
-      if (togglePosition == 0) {
-        togglePosition = toggleCount; //Reset to max.
-      } else {
-        togglePosition--; //Deincrement capacity one step 
-      } 
-
-      displayCount = toggleArray[togglePosition];
-      changeNumber(displayCount); //Send to display
+    if (toggleBtn.update() ) 
+    {
+      if (toggleBtn.read() == HIGH)  
+      {
+        if (togglePosition == 0) {
+          togglePosition = toggleCount; //Reset to max.
+        } else {
+          togglePosition--; //Deincrement capacity one step 
+        } 
+  
+        displayCount = toggleArray[togglePosition];
+        changeNumber(displayCount); //Send to display
+      }
     }
-  
-  
-  // Monitor Reset Button
-  //----------------------------------------------------//
-  
-    // Check if resetbutton is pressed.
-    if (resetBtn.uniquePress()) {  
-      resetCount();
-    }
-
+    
   // Monitor Clip Reset
   //----------------------------------------------------//
     
     // Check if clip is released
-    //if (clipBtn.uniquePress()) {  
-    //  resetCount();
-    //}
   
+    if (clipBtn.update() ) 
+    {
+      if (clipBtn.read() == HIGH)  
+      {
+        resetCount();
+      }
+    }
 }
 
 void resetCount(){
