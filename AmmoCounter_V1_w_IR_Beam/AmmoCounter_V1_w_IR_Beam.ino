@@ -1,5 +1,5 @@
-// AmmoCounter V1 - www.ammocounter.com   
-// Updated 7/5/2016
+// AmmoCounter V1 With IR Beam - www.ammocounter.com   
+// Updated 7/6/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9

@@ -1,4 +1,4 @@
-// AmmoCounter V1 - www.ammocounter.com   
+// AmmoCounter V1 With Trigger Switch - www.ammocounter.com   
 // Updated 6/27/2016
 // Created by: Nathaniel Deal
 //
