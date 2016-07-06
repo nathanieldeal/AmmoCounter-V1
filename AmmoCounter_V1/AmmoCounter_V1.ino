@@ -1,5 +1,5 @@
 // AmmoCounter V1 - www.ammocounter.com   
-// Updated 6/27/2016
+// Updated 7/5/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -17,9 +17,7 @@ int displayCount = toggleArray[toggleCount];  // Set intial count to highest cap
 int firstDigit, secondDigit;
 
 // IR Beam Setup
-const int analogInPin = A2;  // Analog input pin that the ir reciever is attached to
-int sensorValue = 0;        // Value read from the ir beam
-int outputValue = 0;        // Value output to the PWM (analog out)
+int irSensorPin = A2;
 boolean hasCleared = false;  // Check for cleared dart
  
 // Toggle/Reset/Counter Setup
@@ -43,7 +41,7 @@ void setup() {
   pinMode(RCLK_Pin, OUTPUT);
   pinMode(SRCLK_Pin, OUTPUT);
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   
   // Reset all register pins
   clearRegisters();
@@ -58,27 +56,29 @@ void loop(){
   
   // Monitor IR Beam
   //----------------------------------------------------//
-  
-    sensorValue = analogRead(analogInPin); // Read the analog in value
-    outputValue = map(sensorValue, 0, 1023, 0, 255);  // Map it to the range of the analog output
 
-    // If barrel is clear and beam is broken then countdown
-    if (hasCleared == true && outputValue >= 100) {  // This value can be changed depending on dart speed  
-      changeNumber(--displayCount); 
-      hasCleared = !hasCleared;
+    int sensorValue = analogRead(irSensorPin); // Read the analog in value
+    int outputValue = map(sensorValue, 0, 1023, 0, 10);  // Map it to the range of the analog output
+
+    // Check to see if dart has fired
+    if (outputValue > fireValue)
+    {
+      if (hasCleared == true) // If barrel is clear and beam is broken then countdown 
+      {
+        changeNumber(--displayCount); 
+        hasCleared = false;
+
+        // Print the results to the serial monitor for testing
+        // Serial.print("\t output = ");      
+        // Serial.println(outputValue);
+      }
     }
-    
+
     // Check to see if dart has cleared
-    if (outputValue <= 80) { // This value can be changed depending on IR beam setup
+    if (outputValue == idleValue)
+    {
       hasCleared = true;
     }
-
-    // Print the results to the serial monitor for testing
-    /*if (outputValue > 0) {
-      Serial.print("\t output = ");      
-      Serial.println(outputValue);
-    }*/
-
   
   // Monitor Counter Button
   //----------------------------------------------------//
