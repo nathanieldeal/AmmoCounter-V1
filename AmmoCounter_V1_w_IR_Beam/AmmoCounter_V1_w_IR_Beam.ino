@@ -18,6 +18,8 @@ int firstDigit, secondDigit;
 
 // IR Beam Setup
 int irSensorPin = A2;
+int idleValue = 1;
+int fireValue = 3;
 boolean hasCleared = false;  // Check for cleared dart
  
 // Toggle/Reset/Counter Setup
@@ -41,7 +43,7 @@ void setup() {
   pinMode(RCLK_Pin, OUTPUT);
   pinMode(SRCLK_Pin, OUTPUT);
 
-  //Serial.begin(9600);
+  // Serial.begin(9600); // Uncomment for testing
   
   // Reset all register pins
   clearRegisters();
@@ -75,7 +77,7 @@ void loop(){
     }
 
     // Check to see if dart has cleared
-    if (outputValue == idleValue)
+    if (outputValue <= idleValue)
     {
       hasCleared = true;
     }

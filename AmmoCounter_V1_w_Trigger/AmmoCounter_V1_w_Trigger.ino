@@ -1,5 +1,5 @@
 // AmmoCounter V1 With Trigger Switch - www.ammocounter.com   
-// Updated 6/27/2016
+// Updated 7/7/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -16,7 +16,7 @@ int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
 int firstDigit, secondDigit;
 
-// Setup Lever Switches with Bounce2 Library
+// Setup Switches with Bounce2 Library
 #define toggleBtnpin 4
 #define clipBtnpin 5
 #define counterBtnpin 6
@@ -24,7 +24,7 @@ Bounce toggleBtn = Bounce();
 Bounce clipBtn = Bounce(); 
 Bounce counterBtn = Bounce(); 
 
-// Shift Register Init
+// Shift Register Setup
 int SER_Pin = 7;   // Serial-In pin 14 on the 75HC595 (Blue)
 int RCLK_Pin = 8;  // Latch Clock pin 12 on the 75HC595 (Yellow)
 int SRCLK_Pin = 9; // Clock pin 11 on the 75HC595 (Green)
