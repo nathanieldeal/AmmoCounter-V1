@@ -1,5 +1,5 @@
 // AmmoCounter V1 With IR Beam - www.ammocounter.com   
-// Updated 7/6/2016
+// Updated 8/17/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -158,14 +158,13 @@ void changeNumber(int displayCount) {
     
     firstDigit = 0; // Set the first digit to 0
     secondDigit = 0; // Set the second digit to 0
-    
+
     displayNumber(firstDigit,secondDigit); //Display the section
-    writeRegisters(); 
-    
-    // TODO: add double zero blink and buzzer function
+    writeRegisters();
+
+    blinkDisplay(3); // Blink display
+    resetCount();  // Auto reset count   
   }
-  
-  //delay(250); // May be needed to debounce button
 }
 
 void displayNumber(int digit1, int digit2) {
@@ -436,7 +435,7 @@ void secondNumber(int numberToDisplay) {
   }
 }
 
-//set all register pins to HIGH
+//Set all register pins to HIGH
 void clearRegisters(){
   for(int i = numOfRegisterPins - 1; i >=  0; i--){
      registers[i] = HIGH;
@@ -464,8 +463,25 @@ void writeRegisters(){
 
 }
 
-//set an individual pin HIGH or LOW
+//Set an individual pin HIGH or LOW
 void setRegisterPin(int index, int value){
   registers[index] = value;
+}
+
+//Turn the display off and on
+void blinkDisplay(int count){
+
+  for (int i=0; i < count; i++){
+    
+    //Turn off the display
+    displayNumber(10,10);
+    writeRegisters();
+    delay(500);
+    
+    //Turn on display
+    displayNumber(firstDigit,secondDigit); 
+    writeRegisters(); 
+    delay(500);
+  }  
 }
 
