@@ -152,10 +152,9 @@ void changeNumber(int displayCount) {
     
     displayNumber(firstDigit,secondDigit); //Display the section
     writeRegisters(); 
-
-    // Uncomment these functions to activate auto-reset
-    //blinkDisplay(3); // Blink display
-    //resetCount();  // Auto reset count   
+    
+    blinkDisplay(3); // Blink display
+    resetCount();  // Auto reset count   
   }
 }
 
