@@ -1,5 +1,5 @@
 // AmmoCounter V1 With Trigger Switch - www.ammocounter.com   
-// Updated 8/17/2016
+// Updated 8/31/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -10,7 +10,7 @@
 #include <Bounce2.h>
 
 // Setup Counter Variables
-int toggleArray[] = {35,25,18,15,12,6}; // Setup array of magazine sizes
+int toggleArray[] = {35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
