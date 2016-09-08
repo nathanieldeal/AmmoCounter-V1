@@ -15,3 +15,9 @@ Copy the contents of the "Libraries" folder content into the “Libraries” fol
 Double click on the AmmoCounter_V1 > AmmoCounter_V1.ino to open the sketch in the Arduino IDE.
 
 Upload the sketch to your Arduino.
+
+### Version History
+
+v1.1 - Increment and decrement toggle switches, compatible with both IR beam and counter lever switches.
+
+v1.0 - First installation of the AmmoCounter code, various revisions include IR beam, auto-reset, reset/clip toggle buttons.
