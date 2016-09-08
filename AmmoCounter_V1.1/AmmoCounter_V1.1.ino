@@ -1,5 +1,5 @@
-// AmmoCounter V1 With Trigger Switch - www.ammocounter.com   
-// Updated 8/31/2016
+// AmmoCounter V1.1 IR Beam / Trigger Switch - www.ammocounter.com   
+// Updated 9/7/2016
 // Created by: Nathaniel Deal
 //
 // Define the LED digit patterns, from 0 to 9
@@ -16,12 +16,18 @@ int togglePosition = toggleCount; //Start at max capacity.
 int displayCount = toggleArray[toggleCount];  // Set intial count to highest capacity.
 int firstDigit, secondDigit;
 
+// IR Beam Setup
+int irSensorPin = A2;
+int idleValue = 1;
+int fireValue = 3;
+boolean hasCleared = false;  // Check for cleared dart
+ 
 // Setup Switches with Bounce2 Library
-#define toggleBtnpin 4
-#define clipBtnpin 5
+#define decreaseBtnpin 4
+#define increaseBtnpin 5
 #define counterBtnpin 6
-Bounce toggleBtn = Bounce(); 
-Bounce clipBtn = Bounce(); 
+Bounce decreaseBtn = Bounce(); 
+Bounce increaseBtn = Bounce(); 
 Bounce counterBtn = Bounce(); 
 
 // Shift Register Setup
@@ -35,29 +41,28 @@ boolean registers[numOfRegisterPins];
 
 void setup() {
 
-  // Toggle/Reset/Counter Setup
-  pinMode(toggleBtnpin, INPUT); 
-  pinMode(clipBtnpin, INPUT); 
+  // Toggle/Counter Setup
+  pinMode(decreaseBtnpin, INPUT); 
+  pinMode(increaseBtnpin, INPUT); 
   pinMode(counterBtnpin, INPUT); 
 
-  digitalWrite(toggleBtnpin, LOW);  // Activate internal pullup
-  digitalWrite(clipBtnpin, LOW);  // Activate internal pullup
+  digitalWrite(decreaseBtnpin, LOW);  // Activate internal pullup
+  digitalWrite(increaseBtnpin, LOW);  // Activate internal pullup
   digitalWrite(counterBtnpin, LOW);  // Activate internal pullup
 
-  toggleBtn.attach(toggleBtnpin);
-  clipBtn.attach(clipBtnpin);
+  decreaseBtn.attach(decreaseBtnpin);
+  increaseBtn.attach(increaseBtnpin);
   counterBtn.attach(counterBtnpin);
 
-  toggleBtn.interval(5);
-  clipBtn.interval(5);
+  decreaseBtn.interval(5);
+  increaseBtn.interval(5);
   counterBtn.interval(5); 
-
-  // Shift Register Setup
+  
   pinMode(SER_Pin, OUTPUT);
   pinMode(RCLK_Pin, OUTPUT);
   pinMode(SRCLK_Pin, OUTPUT);
 
-  //Serial.begin(9600);
+  // Serial.begin(9600); // Uncomment for testing
   
   // Reset all register pins
   clearRegisters();
@@ -70,10 +75,10 @@ void setup() {
 
 void loop(){
 
-  // Monitor Counter Button
+  // Monitor Counter Switch
   //----------------------------------------------------//
 
-    // Check if the counter button is pressed.    
+    // Check if the counter switch is pressed.    
     if (counterBtn.update() ) 
     {
       if (counterBtn.read() == HIGH)  
@@ -82,13 +87,39 @@ void loop(){
       }
     }  
   
-  // Monitor Toggle Button
+  // Monitor IR Beam
+  //----------------------------------------------------//
+
+    int sensorValue = analogRead(irSensorPin); // Read the analog in value
+    int outputValue = map(sensorValue, 0, 1023, 0, 10);  // Map it to the range of the analog output
+
+    // Check to see if dart has fired
+    if (outputValue > fireValue)
+    {
+      if (hasCleared == true) // If barrel is clear and beam is broken then countdown 
+      {
+        changeNumber(--displayCount); 
+        hasCleared = false;
+
+        // Print the results to the serial monitor for testing
+        // Serial.print("\t output = ");      
+        // Serial.println(outputValue);
+      }
+    }
+
+    // Check to see if dart has cleared
+    if (outputValue <= idleValue)
+    {
+      hasCleared = true;
+    }
+ 
+  // Monitor Decrease Button
   //----------------------------------------------------//
   
-    // Check if the togglebutton is pressed.
-    if (toggleBtn.update() ) 
+    // Check if the decrease button is pressed.
+    if (decreaseBtn.update() ) 
     {
-      if (toggleBtn.read() == HIGH)  
+      if (decreaseBtn.read() == HIGH)  
       {
         if (togglePosition == 0) {
           togglePosition = toggleCount; //Reset to max.
@@ -100,17 +131,23 @@ void loop(){
         changeNumber(displayCount); //Send to display
       }
     }
-    
-  // Monitor Clip Reset
+
+    // Monitor Increase Button
   //----------------------------------------------------//
-    
-    // Check if clip is released
   
-    if (clipBtn.update() ) 
+    // Check if the decrease button is pressed.
+    if (increaseBtn.update() ) 
     {
-      if (clipBtn.read() == HIGH)  
-      {
-        resetCount();
+      if (increaseBtn.read() == HIGH)  
+      {        
+        if (togglePosition == toggleCount) {
+          togglePosition = 0; //Reset to max.
+        } else {
+          togglePosition++; //Deincrement capacity one step 
+        } 
+  
+        displayCount = toggleArray[togglePosition];
+        changeNumber(displayCount); //Send to display
       }
     }
 }
@@ -148,10 +185,10 @@ void changeNumber(int displayCount) {
     
     firstDigit = 0; // Set the first digit to 0
     secondDigit = 0; // Set the second digit to 0
-    
+
     displayNumber(firstDigit,secondDigit); //Display the section
-    writeRegisters(); 
-    
+    writeRegisters();
+
     blinkDisplay(3); // Blink display
     resetCount();  // Auto reset count   
   }
