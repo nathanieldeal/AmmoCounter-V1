@@ -1,4 +1,4 @@
-// AmmoCounter V1 ECS-12 
+// AmmoCounter V1 with Trigger Switch
 // Updated 10/3/2016
 // Created by: Nathaniel Deal
 // More Info: www.ammocounter.com 
