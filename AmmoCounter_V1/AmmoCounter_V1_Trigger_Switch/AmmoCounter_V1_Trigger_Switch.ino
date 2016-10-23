@@ -90,7 +90,7 @@ void loop(){
 //    {
 //      if (clipBtn.read() == HIGH)  
 //      {
-//        count = toggleArray[togglePosition];
+//        count = toggleArray[togglePosition]; // Reset count
 //        counter.displayNumber(count); //Send to display  
 //      }
 //    }
@@ -100,7 +100,8 @@ void loop(){
 
     // Check if count has finished
     if (count == 0) {
-      count = toggleArray[togglePosition];  
+      counter.blinkDisplay(3); // Blink display 3x
+      count = toggleArray[togglePosition]; // Reset count
       counter.displayNumber(count); //Send to display
     }
 }
