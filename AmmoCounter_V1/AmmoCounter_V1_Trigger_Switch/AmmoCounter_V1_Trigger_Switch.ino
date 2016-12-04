@@ -1,5 +1,5 @@
 // AmmoCounter V1 with Trigger Switch
-// Updated 10/3/2016
+// Updated 12/3/2016
 // Created by: Nathaniel Deal
 // More Info: www.ammocounter.com 
 
@@ -8,7 +8,7 @@
 #include <AmmoCounter.h>
 
 // Setup Toggle/Counter Variables
-int toggleArray[] = {35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
+int toggleArray[] = {0,35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; // Start at max capacity.
 int count = toggleArray[toggleCount];  // Set intial count to highest capacity.
@@ -58,7 +58,26 @@ void loop(){
     {
       if (counterBtn.read() == HIGH)  
       {
-        counter.displayNumber(--count); 
+        if (toggleArray[togglePosition] == 0) {
+          
+          // If OO has been selected, Count Up
+          counter.displayNumber(++count);
+
+          // Check if count has finished, Auto-Reset
+          if (count == 99) {
+            _autoReset(); // Reset Count
+          }
+          
+        } else {
+        
+          // Count Down
+          counter.displayNumber(--count); 
+  
+          // Check if count has finished, Auto-Reset
+          if (count == 0) {
+            _autoReset(); // Reset Count
+          }
+        }  
       }
     }  
   
@@ -94,14 +113,12 @@ void loop(){
 //        counter.displayNumber(count); //Send to display  
 //      }
 //    }
+}
 
-  // Auto-Reset
-  //----------------------------------------------------//
-
-    // Check if count has finished
-    if (count == 0) {
-      counter.blinkDisplay(3); // Blink display 3x
-      count = toggleArray[togglePosition]; // Reset count
-      counter.displayNumber(count); //Send to display
-    }
+// Blink display and then auto-reset     
+//----------------------------------------------------//  
+void _autoReset() {
+  counter.blinkDisplay(3); // Blink display 3x    
+  count = toggleArray[togglePosition]; // Reset count   
+  counter.displayNumber(count); //Send to display   
 }
