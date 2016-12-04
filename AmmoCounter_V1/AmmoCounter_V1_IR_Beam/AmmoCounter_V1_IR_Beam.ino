@@ -1,5 +1,5 @@
 // AmmoCounter V1 with IR Beam 
-// Updated 10/3/2016
+// Updated 12/3/2016
 // Created by: Nathaniel Deal
 // More Info: www.ammocounter.com 
 
@@ -8,7 +8,7 @@
 #include <AmmoCounter.h>
 
 // Setup Toggle/Counter Variables
-int toggleArray[] = {35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
+int toggleArray[] = {0,35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; // Start at max capacity.
 int count = toggleArray[toggleCount];  // Set intial count to highest capacity.
@@ -45,8 +45,32 @@ void loop(){
     {
       if (hasCleared == true) // If barrel is clear and beam is broken then countdown 
       {
-        counter.displayNumber(--count); 
-        hasCleared = false;
+
+        if (toggleArray[togglePosition] == 0) { // If OO has been selected, count up
+          
+          counter.displayNumber(++count); 
+          hasCleared = false;
+
+          // Check if count has finished, Auto-Reset
+          if (count == 99) {
+            counter.blinkDisplay(3); // Blink display 3x
+            count = toggleArray[togglePosition]; // Reset count
+            counter.displayNumber(count); //Send to display
+          }
+          
+        } else {
+
+          // Count Down
+          counter.displayNumber(--count); 
+          hasCleared = false;
+  
+          // Check if count has finished, Auto-Reset
+          if (count == 0) {
+            counter.blinkDisplay(3); // Blink display 3x
+            count = toggleArray[togglePosition]; // Reset count
+            counter.displayNumber(count); //Send to display
+          }
+        }
 
         // Print the results to the serial monitor for testing
         // Serial.print("\t output = ");      
@@ -85,16 +109,6 @@ void loop(){
       
       count = toggleArray[togglePosition]; // Reset count
       counter.displayNumber(count); //Send to display  
-    }
-
-  // Auto-Reset
-  //----------------------------------------------------//
-
-    // Check if count has finished
-    if (count == 0) {
-      counter.blinkDisplay(3); // Blink display 3x
-      count = toggleArray[togglePosition]; // Reset count
-      counter.displayNumber(count); //Send to display
     }
 }
 
