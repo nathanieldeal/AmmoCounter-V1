@@ -53,9 +53,7 @@ void loop(){
 
           // Check if count has finished, Auto-Reset
           if (count == 99) {
-            counter.blinkDisplay(3); // Blink display 3x
-            count = toggleArray[togglePosition]; // Reset count
-            counter.displayNumber(count); //Send to display
+            _autoReset(); // Reset Count
           }
           
         } else {
@@ -66,9 +64,7 @@ void loop(){
   
           // Check if count has finished, Auto-Reset
           if (count == 0) {
-            counter.blinkDisplay(3); // Blink display 3x
-            count = toggleArray[togglePosition]; // Reset count
-            counter.displayNumber(count); //Send to display
+            _autoReset(); // Reset Count
           }
         }
 
@@ -112,3 +108,10 @@ void loop(){
     }
 }
 
+// Blink display and then auto-reset     
+//----------------------------------------------------//  
+void _autoReset() {
+  counter.blinkDisplay(3); // Blink display 3x    
+  count = toggleArray[togglePosition]; // Reset count   
+  counter.displayNumber(count); //Send to display   
+}
