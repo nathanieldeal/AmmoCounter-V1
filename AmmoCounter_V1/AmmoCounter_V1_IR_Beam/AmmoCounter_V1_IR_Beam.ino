@@ -8,7 +8,7 @@
 #include <AmmoCounter.h>
 
 // Setup Toggle/Counter Variables
-int toggleArray[] = {0,35,25,22,18,15,12,10,6}; // Setup array of magazine sizes
+int toggleArray[] = {0,35,25,22,18,15,12,10,6}; // Dart clip sizes (Use {0,99,45,40} For Khaos)
 int toggleCount = (sizeof(toggleArray)/sizeof(int))-1; // Find size of array
 int togglePosition = toggleCount; // Start at max capacity.
 int count = toggleArray[toggleCount];  // Set intial count to highest capacity.
@@ -20,7 +20,8 @@ int idleValue = 1;
 int fireValue = 3;
 boolean hasCleared = false;  // Check for cleared dart
  
-// Toggle/Reset Setup
+// Clip/Toggle/Reset Setup
+Button clipBtn = Button (3, PULLDOWN);     // Use digital pin 3 for the clip pin
 Button toggleBtn = Button (4, PULLDOWN);   // Use digital pin 4 for the toggle pin
 Button resetBtn = Button (5, PULLDOWN);    // Use digital pin 5 for the reset pin
 
@@ -46,8 +47,9 @@ void loop(){
       if (hasCleared == true) // If barrel is clear and beam is broken then countdown 
       {
 
-        if (toggleArray[togglePosition] == 0) { // If OO has been selected, count up
-          
+        if (toggleArray[togglePosition] == 0) { 
+
+          // If OO has been selected, Count Up
           counter.displayNumber(++count); 
           hasCleared = false;
 
@@ -101,11 +103,19 @@ void loop(){
   //----------------------------------------------------//
   
     // Check if resetbutton is pressed.
-    if (resetBtn.uniquePress()) {  
-      
+    if (resetBtn.uniquePress()) {      
       count = toggleArray[togglePosition]; // Reset count
       counter.displayNumber(count); //Send to display  
     }
+    
+  // Monitor Clip Reset
+  //----------------------------------------------------//
+ 
+    // Check if clip is released
+//    if (clipBtn.uniquePress()) {  
+//      count = toggleArray[togglePosition]; // Reset count
+//      counter.displayNumber(count); //Send to display
+//    }
 }
 
 // Blink display and then auto-reset     
